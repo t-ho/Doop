@@ -34,7 +34,7 @@
 					<div class="md-body">
 						<div ng-show="$ctrl.notificationsLoadedOnce">
 							<div ng-show="!$ctrl.notifications.length" class="p-t-10 p-b-10 text-center text-muted">No notifications to show</div>
-							<a ng-repeat="notification in $ctrl.notifications track by notification._id" href="#/notification/{{notification._id}}" class="list-group-item media">
+							<a ng-repeat="notification in $ctrl.notifications track by notification._id" href="#/notifications/{{notification._id}}" class="list-group-item media">
 								<div class="pull-left">
 									<img gravatar-src="notification.from.email" gravatar-size="50" gravatar-default="identicon" class="img-circle img-user media-object">
 					
