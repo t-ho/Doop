@@ -90,8 +90,21 @@ var defaults = {
 		name: '{{FIXME.newrelic.name}}',
 		license: '{{FIXME.newrelic.license}}',
 	},
+	papertrail: {
+		enabled: false,
+		host: 'logs6.papertrailapp.com',
+		port: 36302,
+	},
 	paths: {
 		root: path.normalize(__dirname + '/..'),
+	},
+	rollbar: {
+		enabled: false,
+		apiKey: 'FIXME: Define per profile',
+	},
+	sanity: {
+		writability: true,
+		ownership: false,
 	},
 	session: {
 		signup: {
