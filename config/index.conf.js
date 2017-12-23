@@ -73,6 +73,12 @@ var defaults = {
 		enabled: false, // FIXME: Set this to true if you want to use profiles (you will also need to update units/theme/config.serv.js)
 		domain: 'localhost',
 	},
+	logging: {
+		enabled: true,
+		verbose: 1, // 0=off, 1=errors only, 2=all
+		collections: [ // List all collection names to be tracked here
+		],
+	},
 	mailgun: {
 		apiKey: '{{FIXME.mailgun.apiKey}}',
 		domain: '{{FIXME.mailgun.domain}}',
