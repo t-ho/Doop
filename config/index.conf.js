@@ -77,6 +77,7 @@ var defaults = {
 		enabled: true,
 		verbose: 1, // 0=off, 1=errors only, 2=all
 		collections: [ // List all collection names to be tracked here
+			'users',
 		],
 	},
 	mailgun: {
