@@ -14,7 +14,7 @@ module.exports = {
 		domain: 'dex',
 	},
 	rollbar: {
-		enabled: true,
+		enabled: false,
 		apiKey: '2a9949299c8d4c0f8f9fcf0524b51eb1',
 	},
 };

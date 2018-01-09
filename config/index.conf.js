@@ -80,6 +80,12 @@ var defaults = {
 			'users',
 		],
 	},
+	middleware: {
+		cache: {
+			enabled: false,
+			modules: ['memcached', 'mongodb', 'memory'],
+		},
+	},
 	mailgun: {
 		apiKey: '{{FIXME.mailgun.apiKey}}',
 		domain: '{{FIXME.mailgun.domain}}',
@@ -91,11 +97,6 @@ var defaults = {
 				safe: true,
 			}
 		}
-	},
-	newrelic: {
-		enabled: false,
-		name: '{{FIXME.newrelic.name}}',
-		license: '{{FIXME.newrelic.license}}',
 	},
 	papertrail: {
 		enabled: false,
