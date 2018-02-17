@@ -1,20 +1,8 @@
+var _ = require('lodash');
 var colors = require('chalk');
 
 app.register('preControllers', ['session'], function(finish) {
-	app.middleware.ensure = {
-		authFail: function(req, res, next) {
-			console.log(colors.red('UNAUTHORIZED'), colors.cyan(req.url));
-
-			res.format({
-				'application/json': function() {
-					res.sendError(403, 'Unauthorized');
-				},
-				'default': function() {
-					res.redirect('/');
-				},
-			});
-		},
-
+	_.merge(app.middleware, {ensure: {
 		/**
 		 * Special handler to reject login and redirect to login screen or raise error depending on context
 		 */
@@ -61,7 +49,10 @@ app.register('preControllers', ['session'], function(finish) {
 			if (req.user && req.user._id && (req.user.role == 'admin' || req.user.role == 'root')) {
 				return next();
 			} else {
-				app.middleware.ensure.authFail(req, res, next);
+				res.format({
+					'application/json': ()=> res.sendError(403, 'Unauthorized - user is not admin'),
+					'default': ()=> res.redirect('/'),
+				});
 			}
 		},
 
@@ -72,10 +63,13 @@ app.register('preControllers', ['session'], function(finish) {
 			if (req.user && req.user._id && req.user.role == 'root') {
 				return next();
 			} else {
-				app.middleware.ensure.authFail(req, res, next);
+				res.format({
+					'application/json': ()=> res.sendError(403, 'Unauthorized - user is not root'),
+					'default': ()=> res.redirect('/'),
+				});
 			}
 		},
-	};
+	}});
 
 	finish();
 });

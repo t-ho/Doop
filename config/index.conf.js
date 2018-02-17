@@ -73,6 +73,19 @@ var defaults = {
 		enabled: false, // FIXME: Set this to true if you want to use profiles (you will also need to update units/theme/config.serv.js)
 		domain: 'localhost',
 	},
+	logging: {
+		enabled: true,
+		verbose: 1, // 0=off, 1=errors only, 2=all
+		collections: [ // List all collection names to be tracked here
+			'users',
+		],
+	},
+	middleware: {
+		cache: {
+			enabled: false,
+			modules: ['memcached', 'mongodb', 'memory'],
+		},
+	},
 	mailgun: {
 		apiKey: '{{FIXME.mailgun.apiKey}}',
 		domain: '{{FIXME.mailgun.domain}}',
@@ -85,13 +98,21 @@ var defaults = {
 			}
 		}
 	},
-	newrelic: {
+	papertrail: {
 		enabled: false,
-		name: '{{FIXME.newrelic.name}}',
-		license: '{{FIXME.newrelic.license}}',
+		host: 'logs6.papertrailapp.com',
+		port: 36302,
 	},
 	paths: {
 		root: path.normalize(__dirname + '/..'),
+	},
+	rollbar: {
+		enabled: false,
+		apiKey: 'FIXME: Define per profile',
+	},
+	sanity: {
+		writability: true,
+		ownership: false,
 	},
 	session: {
 		signup: {

@@ -28,6 +28,20 @@ angular
 
 
 		/**
+		* Display a brief message to indicate that something has just been saved
+		*/
+		$toast.save = ()=>
+			Notification({
+				templateUrl: 'angular-ui-notification-save.html',
+				message: 'Saved',
+				delay: 1000,
+				type: 'success',
+				positionY: 'top',
+				positionX: 'right',
+			});
+
+
+		/**
 		* Catch and display an error message from a promise
 		* This funciton tries various methods to figure out what the human readable error message should actually be
 		* Its designed to be used in Promise callbacks
@@ -40,17 +54,19 @@ angular
 		$toast.catch = function(obj) {
 			console.warn('Promise chain threw error:', obj);
 			if (_.isObject(obj) && obj.status && obj.status == -1 && obj.statusText && obj.statusText == '') return $toast.offline(true);
+			if (obj === 'cancel') return; // Silently ignore user cancelled actions
 
 			$toast.error(
-				_.isUndefined(obj) ? 'An error has occured' :
-				_.isString(obj) ? obj :
-				_.has(obj, 'error') && obj.error ? obj.error :
-				_.has(obj, 'data') && _.isString(obj.data) ? obj.data :
-				_.has(obj, 'data.errmsg') && obj.data.errmsg ? obj.data.errmsg :
-				_.has(obj, 'data.error') && obj.data.error ? obj.data.error :
-				_.has(obj, 'statusText') && obj.statusText ? obj.statusText :
-				_.has(obj, 'status') && obj.status === -1 ? 'Server connection failed' :
-				_.isFunction(obj.toString) && obj.toString() !== '[object Object]' ? obj.toString() :
+				_.isUndefined(obj) ? 'An error has occured'
+				: _.isString(obj) ? obj
+				: _.has(obj, 'error') && obj.error ? obj.error
+				: _.has(obj, 'data') && _.isString(obj.data) ? obj.data
+				: _.has(obj, 'data.errmsg') && obj.data.errmsg ? obj.data.errmsg
+				: _.has(obj, 'data.error') && obj.data.error ? obj.data.error
+				: _.has(obj, 'statusText') && obj.statusText ? obj.statusText
+				: _.has(obj, 'status') && obj.status === -1 ? 'Server connection failed'
+				: _.has(obj, 'message') && /Received: ".+"/.test(obj.message) ? (function(text) { var matches = /^.+Received: "(.+?)"/.exec(text); return matches[1]; }(obj.message))
+				: _.isFunction(obj.toString) && obj.toString() !== '[object Object]' ? obj.toString() :
 				'An error has occured'
 			);
 		};
@@ -79,4 +95,15 @@ angular
 		});
 
 		return $toast;
-	});
+	})
+	.run(function($templateCache) {
+		$templateCache.put('angular-ui-notification-save.html', `
+			<div class="ui-notification ui-notification-save">
+				<h3 ng-show="title" ng-bind-html="title"></h3>
+				<div class="message">
+					<i class="fa fa-check"></i>
+					<span ng-bind-html="message"></span>
+				</div>
+			</div>
+		`);
+	})

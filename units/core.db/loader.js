@@ -4,11 +4,11 @@
 *
 * @example
 * // Access the database via a dumb module:
-* var db = require(config.paths.root + '/units/db/loader')(function(db) { // db is now the modules loaded // })
+* var db = require(config.paths.root + '/units/core.db/loader')(function(db) { // db is now the modules loaded // })
 *
 * @exmaple
 * // Access the database via an emitter
-* require(config.paths.root + '/units/db/loader')()
+* require(config.paths.root + '/units/core.db/loader')()
 * 	.on('end', (models) => { // Models is now the modules loaded // });
 */
 
@@ -20,7 +20,7 @@ var monoxide = require('monoxide');
 
 /**
 * Load the database and all models
-* @param {function} callback Optional callback to fire on exit
+* @param {function} callback Optional callback to fire on exit. Called as (err, models)
 * @return {EventEmitter}
 */
 module.exports = function databaseLoader(callback) {

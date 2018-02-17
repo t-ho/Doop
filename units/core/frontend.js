@@ -14,15 +14,16 @@ angular
 		'ui.gravatar',
 		'ui.select',
 		'ui-notification',
-		'uiSwitch',
+		'uiToggle',
 	])
 
 	// Global controller {{{
-	.controller('GlobalCtrl', function($config, $rootScope, $scope, $session) {
-		var $ctrl = this;
+	.controller('GlobalCtrl', function($config, $rootScope, $router, $scope, $session) {
+		var $global = this;
 		// Init user session object/data
-		$ctrl.$config = $config;
-		$ctrl.$session = $session;
+		$global.$config = $config;
+		$global.$router = $router;
+		$global.$session = $session;
 	})
 	// }}}
 
@@ -206,7 +207,7 @@ angular
 	// Reload default layout settings on every router success {{{
 	.run(function($rootScope, $config) {
 		$rootScope.$on('$routerSuccess', ()=> {
-			if(!$config.layout.isImportant) {
+			if (!$config.layout.isImportant) {
 				$config.layout.headerNavbar = true;
 				$config.layout.sidebar = true;
 				$config.layout.footer = false;
@@ -223,25 +224,27 @@ angular
 
 	// Page load animation {{{
 	.run(function($rootScope, $timeout) {
-		var offsetY = 150; // Max Y offset when transitioning the page animation
+		var previousRule;
 
-		$rootScope.$on('$routerStart', ()=> angular.element('#content').css('opacity', 0));
-		$rootScope.$on('$routerSuccess', ()=> {
+		$rootScope.$on('$routerStart', (e, rule) => {
+			previousRule = rule;
+			angular.element('#content').css('opacity', 0);
+		});
+
+		$rootScope.$on('$routerSuccess', (e, rule) => {
+			if (previousRule && previousRule._id && rule._id == previousRule._id) { // Navigating to self - skip animation
+				angular.element('#content').css('opacity', 1);
+				return;
+			}
+
 			var pageArea = angular.element('#content')
-
 			pageArea
-				.css('animateOffsetY', 0)
 				.animate({
 					opacity: 1,
-					animateOffsetY: offsetY,
 				}, {
-					duration: 500,
+					duration: 400,
 					easing: 'swing',
-					step: (val, fx) => {
-						if (fx.prop == 'animateOffsetY')
-							pageArea.css('transform', 'translateY(' + Math.floor(offsetY - val) + 'px)');
-					},
-					complete: ()=> pageArea.css({transform: '', opacity: ''}), // Remove mutated properties when we're done with them
+					complete: ()=> pageArea.css({opacity: ''}), // Remove mutated properties when we're done with them
 				});
 		});
 	})
@@ -253,13 +256,54 @@ angular
 	})
 	// }}}
 
+	// Append $router.breadcrumbs() + $router.title to router {{{
+	.run(function($config, $rootScope, $router) {
+		$router.page = {_title: $config.title, _breadcrumbs: []};
+
+		/**
+		* Set the page title
+		* This overrides any initial call to the routes title (via `$router.when(...).title('Something')`)
+		* NOTE: Falsy arguments are ignored
+		* @param {string,array} ...title The title or title segments to set. The main site title is automatically pre-pended
+		* @return {$router.page} Chainable $router.page object
+		*/
+		$router.page.title = function(...title) {
+			$router.page._title = document.title = [$config.title]
+				.concat(_.flatten(title))
+				.filter(i => !!i)
+				.reverse()
+				.join(' | ');
+
+			return $router.page;
+		};
+
+
+		/**
+		* Set the page breadcrumbs
+		* NOTE: Falsy arguments are ignored
+		* @param {array} ...breadcrumbs The breadcrumb segments to set. Each item should be an object of the form {link,title}
+		* @return {$router.page} Chainable $router.page object
+		*/
+		$router.page.breadcrumbs = function(...breadcrumbs) {
+			$router.page._breadcrumbs = _.flatten(breadcrumbs).filter(i => !!i);
+			return $router.page;
+		};
+
+
+		$rootScope.$on('$routerStart', ()=> { // Reset tite + breadcrumbs on each page navigate
+			$router.page._title = $config.title;
+			$router.page._breadcrumbs = [];
+		});
+	})
+	// }}}
+
 	// }}}
 
 	// Theme {{{
 
 	// Disable animation effects on certain elements by default {{{
 	.config($animateProvider => {
-		$animateProvider.classNameFilter(/^((?!(fa-spinner)).)*$/);
+		$animateProvider.classNameFilter(/^((?!(fa-spinner|btn|brand-icon|modal)).)*$/);
 	})
 	// }}}
 
@@ -302,4 +346,5 @@ angular
 	// Remove bootstraping body class now everything is ready {{{
 	.run($timeout => $timeout(()=> $('body').removeClass('bootstraping')))
 	// }}}
+
 	// }}}

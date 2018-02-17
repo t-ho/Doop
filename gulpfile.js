@@ -54,6 +54,7 @@ global.paths = {
 			'node_modules/lodash/lodash.js',
 			'node_modules/angular/angular.js',
 			'node_modules/moment/moment.js',
+			'node_modules/tether/dist/js/tether.js',
 			// --- packages with dependents below this line --- //
 			// NOTE: Don't need main bootstrap.css as the theme provides this
 			'node_modules/bootstrap/dist/js/bootstrap.js',
@@ -61,6 +62,7 @@ global.paths = {
 			'node_modules/@momsfriendlydevco/animate/dist/animate.css',
 			'node_modules/@momsfriendlydevco/angular-bs-tooltip/dist/angular-bs-tooltip.js',
 			'node_modules/@momsfriendlydevco/angular-ui-loader/dist/ng-loader.js',
+			'node_modules/@momsfriendlydevco/angular-ui-toggle/dist/angular-ui-toggle.{css,js}',
 			'node_modules/@momsfriendlydevco/router/dist/angular-mfdc-router.js',
 			'node_modules/angular-animate/angular-animate.js',
 			'node_modules/angular-bs-confirm/angular-bs-confirm.js',
@@ -69,7 +71,6 @@ global.paths = {
 			'node_modules/angular-resource/angular-resource.js',
 			'node_modules/angular-sanitize/angular-sanitize.js',
 			'node_modules/angular-ui-notification/dist/angular-ui-notification.{css,js}',
-			'node_modules/angular-ui-switch/angular-ui-switch.{css,js}',
 			'node_modules/font-awesome/css/font-awesome.css',
 			'node_modules/node-waves/dist/waves.css',
 			'node_modules/node-waves/dist/waves.js',
@@ -117,11 +118,6 @@ global.paths = {
 };
 // }}}
 
-/**
-* Use project's common gulp utils lib
-*/
-var common = require('./gulp/common.gulp.lib');
-
 // Pull in gulp remaining gulp files (i.e. tasks)
 glob.sync(__dirname + '/**/*.gulp.js').forEach(path => require(path));
 
@@ -151,6 +147,7 @@ gulp.on('stop', ()=> process.exit(0));
 gulp.task('load:app', [], function(finish) {
 	require('./units/core/backend');
 	global.config = app.config;
+	gutil.log('Using application env', gutil.colors.cyan(config.env));
 
 	finish();
 });
@@ -159,7 +156,10 @@ gulp.task('load:app', [], function(finish) {
 * Connects to the database and loads all models into `app.db` + `db`
 */
 gulp.task('load:app.db', ['load:app'], function(finish) {
-	require(config.paths.root + '/units/db/loader')(function(err, models) {
+	// Load the app.middleware.logging.db middleware - needed by schemas to log their state
+	_.set(app, 'middleware.logging.db', require(app.config.paths.root + '/units/middleware.logging.db/logging'));
+
+	require(config.paths.root + '/units/core.db/loader')(function(err, models) {
 		if (err) return finish(err);
 		global.db = app.db = models;
 		finish();
