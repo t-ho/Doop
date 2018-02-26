@@ -25,7 +25,7 @@ angular
 		.component('errorCtrl')
 	)
 	.component('errorCtrl', {
-		templateUrl: '/units/errors/error.tmpl.html',
+		templateUrl: '/units/core.errors/error.tmpl.html',
 		controller: function($router, $config) {
 			var $ctrl = this;
 			$ctrl.$config = $config;
