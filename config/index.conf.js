@@ -62,10 +62,12 @@ var defaults = {
 		signoff: 'Doop',
 	},
 	gulp: {
-		notifications: true,
+		targets: {browsers: 'last 2 versions'},
+		notifications: false,
 		notifySettings: {
 			sound: false,
 		},
+		npmUpdate: true,
 		debugJS: true,
 		minifyJS: false,
 		debugCSS: true,
