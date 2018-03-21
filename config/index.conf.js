@@ -3,6 +3,8 @@
 *
 * This is the primary app configuration file. App defaults should be set here
 * which will be overridden by any other config files using the same config fields.
+*
+* NOTE: Any function values will be run as `(config)` and expected to return a sclar / array / object. This can be used to lookup final config values and inherit them from elsewhere in the tree
 */
 
 var _ = require('lodash');
@@ -60,10 +62,12 @@ var defaults = {
 		signoff: 'Doop',
 	},
 	gulp: {
-		notifications: true,
+		targets: {browsers: 'last 2 versions'},
+		notifications: false,
 		notifySettings: {
 			sound: false,
 		},
+		npmUpdate: true,
 		debugJS: true,
 		minifyJS: false,
 		debugCSS: true,
@@ -168,6 +172,14 @@ var parsedURL = url.parse(config.url);
 parsedURL.host = undefined; // Have to set this to undef to force a hostname rebuild
 parsedURL.port = undefined; // Have to set this to reset the port to default (80 doesn't work for some reason)
 config.publicUrl = _.trimEnd(url.format(parsedURL), '/');
+// }}}
+// Flatten all functions into values (i.e. resolve them into what they should be to support recursion) {{{
+config = _.cloneDeepWith(config, node => {
+	if (_.isFunction(node)) {
+		return node(config);
+	}
+	return undefined; // Let Lodash handle the rest
+});
 // }}}
 // }}}
 
