@@ -109,6 +109,7 @@ var defaults = {
 	},
 	paths: {
 		root: path.normalize(__dirname + '/..'),
+		data: path.normalize(__dirname + '/../data'),
 	},
 	rollbar: {
 		enabled: false,
