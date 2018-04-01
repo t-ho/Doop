@@ -89,8 +89,13 @@ var defaults = {
 	},
 	middleware: {
 		cache: {
-			enabled: false,
+			enabled: true,
+			keyMangle: config => key => config.name + '-' + key, // Configure cache to use the site name prefix (prevents cache collosions if multiple instances are running on the same box)
 			modules: ['memcached', 'mongodb', 'memory'],
+			mongodb: {
+				uri: config => config.mongo.uri,
+				collection: 'routeCache',
+			},
 		},
 	},
 	mailgun: {
