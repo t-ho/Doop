@@ -61,6 +61,9 @@ var defaults = {
 		cc: [],
 		signoff: 'Doop',
 	},
+	git: {
+		url: 'https://github.com/MomsFriendlyDevCo/Doop',
+	},
 	gulp: {
 		targets: {browsers: 'last 2 versions'},
 		notifications: false,
