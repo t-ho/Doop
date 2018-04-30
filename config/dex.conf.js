@@ -2,13 +2,17 @@
 module.exports = {
 	port: process.env.PORT || 80,
 	url: 'http://dex',
+	access: {
+		lockdown: false,
+	},
 	email: {
 		enabled: true,
 		method: 'mailgun',
 		toAdmin: 'matt@mfdc.biz',
 	},
-	access: {
-		lockdown: false,
+	gulp: {
+		notifications: true,
+		npmUpdate: false,
 	},
 	instances: {
 		domain: 'dex',
