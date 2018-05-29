@@ -59,7 +59,10 @@ app.register('preControllers', ['session'], function(finish) {
 		 * Verifies the user is an admin or not
 		 */
 		admin: function(req, res, next) {
-			if (req.user && req.user._id && (req.user.role == 'admin' || req.user.role == 'root')) {
+			if (!req.user || (req.user && !req.user._id)) { // not logged in
+				return app.middleware.ensure.loginFail(req, res, next);
+			}
+			if (req.user.role == 'admin' || req.user.role == 'root') {
 				return next();
 			} else {
 				app.middleware.ensure.authFail(req, res, next);
@@ -70,7 +73,10 @@ app.register('preControllers', ['session'], function(finish) {
 		 * Verifies the user is root
 		 */
 		root: function(req, res, next) {
-			if (req.user && req.user._id && req.user.role == 'root') {
+			if (!req.user || (req.user && !req.user._id)) { // not logged in
+				return app.middleware.ensure.loginFail(req, res, next);
+			}
+			if (req.user.role == 'root') {
 				return next();
 			} else {
 				app.middleware.ensure.authFail(req, res, next);
