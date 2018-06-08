@@ -14,7 +14,7 @@ app.register('preControllers', ['core.db'], function (finish) {
     secret: app.config.session.secret,
     store: new mongoStore({
       uri: app.config.mongo.uri,
-      databaseName: 'tinca',
+      databaseName: 'doop',
       collection: 'sessions',
       idField: 'sessionID',
     }),
